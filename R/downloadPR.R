@@ -70,15 +70,11 @@ downloadPR <- function(pr, year, dir, log=NULL, baseURL = 'ftp://ftp.glcf.umd.ed
       
       # Check if URL exists
       if (url.exists(url = url) == F){
-          print("No Path/Row was found. It either doesn't exists, or please check your PR input")
-          out <- NULL
-          return(out)
+          out <- print("No Path/Row was found. It either doesn't exists, or check your PR input")
       } else {
           # Build output string
           filename <- sprintf('%s/%s%s', dir, urlP, urlF)
-          dir.create(dirname(filename), showWarnings = FALSE, recursive=TRUE)
-          
-          
+          dir.create(dirname(filename), showWarnings = FALSE, recursive=TRUE)   
           # Check whether file does already exist or not
           if (!file.exists(filename)) {
               print(sprintf('Downloading %s', url))
@@ -97,12 +93,12 @@ downloadPR <- function(pr, year, dir, log=NULL, baseURL = 'ftp://ftp.glcf.umd.ed
           } else {
               out <- print(sprintf('File %s already exists, it won\'t be downloaded', basename(filename)))
           }
-          return(out)
-      }
+          
+          
+      }  
+      return(out)
+  } 
 
-  }
-  
-  
   
   fun <- function(x, y) {    # Error catching function
     tryReport <- try(dl(x, y))    
@@ -117,6 +113,8 @@ downloadPR <- function(pr, year, dir, log=NULL, baseURL = 'ftp://ftp.glcf.umd.ed
   for (i in year) {
     sapply(X=pr, FUN=fun, i)
   }
-  
+
 }
+
+
 
