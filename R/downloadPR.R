@@ -48,50 +48,58 @@ downloadPR <- function(pr, year, dir, log=NULL, baseURL = 'ftp://ftp.glcf.umd.ed
   cat(date(), file=log, sep="\n") #First line of the log file
   
   nbFiles <- length(pr) * length(year)
-  print(sprintf('About to start downloading: %d files to download in total', nbFiles))
   
-  dl <- function(x, y) { # y is year ; x is the pr element and has already been converted to character
-    
-    # Build URL
-    p <- substr(x,1,3)
-    r <- substr(x,4,6)
-    if(year == 2000| year == 2005){
-        urlP <- sprintf('LandsatTreecover/WRS2/p%s/r%s/p%sr%s_TC_%d/', p, r, p, r, y) #Path part of the url
-        urlF <- sprintf('p%sr%s_TC_%d.tif.gz', p, r, y) # Filename part of the url
-        url <- sprintf('%s%s%s', baseURL, urlP, urlF)
-    } else if (year == 19902000 | year == 20002005) {
-        urlP <- sprintf('LandsatFCC/WRS2/p%s/r%s/p%sr%s_FCC_%d/', p, r, p, r, y) #Path part of the url
-        urlF <- sprintf('p%sr%s_FCC_%d_CM.tif.gz', p, r, y) # Filename part of the url
-        url <- sprintf('%s%s%s', baseURL, urlP, urlF)
-    }
-    
-    # Build output string
-    filename <- sprintf('%s/%s%s', dir, urlP, urlF)
-    dir.create(dirname(filename), showWarnings = FALSE, recursive=TRUE)
-    
-    
-    
-    # Check whether file does already exist or not
-    if (!file.exists(filename)) {
-      print(sprintf('Downloading %s', url))
-      a <- download.file(url=url, destfile=filename)
-      if (a == 0) {
-        out <- sprintf('%s downloaded successfully', url)
-      } else if (file.info(filename)$size == 0) {
-          out <- print('Something went wrong with downloading, file size == 0 bytes, one more attempt on downloading')
-          a <- download.file(url=url, destfile=filename)
-      } else {
-          out <- sprintf('%s could not be downloaded', url)
+  if (nbFiles == 0){
+      print("No tiles found to cover this coordinate. Skipping")
+      out <- NULL
+      return(out)
+  } else {
+      print(sprintf('About to start downloading: %d files to download in total', nbFiles))
+      
+      dl <- function(x, y) { # y is year ; x is the pr element and has already been converted to character
+          
+          # Build URL
+          p <- substr(x,1,3)
+          r <- substr(x,4,6)
+          if(year == 2000| year == 2005){
+              urlP <- sprintf('LandsatTreecover/WRS2/p%s/r%s/p%sr%s_TC_%d/', p, r, p, r, y) #Path part of the url
+              urlF <- sprintf('p%sr%s_TC_%d.tif.gz', p, r, y) # Filename part of the url
+              url <- sprintf('%s%s%s', baseURL, urlP, urlF)
+          } else if (year == 19902000 | year == 20002005) {
+              urlP <- sprintf('LandsatFCC/WRS2/p%s/r%s/p%sr%s_FCC_%d/', p, r, p, r, y) #Path part of the url
+              urlF <- sprintf('p%sr%s_FCC_%d_CM.tif.gz', p, r, y) # Filename part of the url
+              url <- sprintf('%s%s%s', baseURL, urlP, urlF)
+          }
+          
+          # Build output string
+          filename <- sprintf('%s/%s%s', dir, urlP, urlF)
+          dir.create(dirname(filename), showWarnings = FALSE, recursive=TRUE)
+          
+          
+          
+          # Check whether file does already exist or not
+          if (!file.exists(filename)) {
+              print(sprintf('Downloading %s', url))
+              a <- download.file(url=url, destfile=filename)
+              if (a == 0) {
+                  out <- sprintf('%s downloaded successfully', url)
+              } else if (file.info(filename)$size == 0) {
+                  out <- print('Something went wrong with downloading, file size == 0 bytes, one more attempt on downloading')
+                  a <- download.file(url=url, destfile=filename)
+              } else {
+                  out <- sprintf('%s could not be downloaded', url)
+              }
+          } else if (file.info(filename)$size == 0){
+              out <- print('file exists, but is 0 bytes, download will start again and overwrite previous file')
+              a <- download.file(url=url, destfile=filename)
+          } else {
+              out <- print(sprintf('File %s already exists, it won\'t be downloaded', basename(filename)))
+          }
+          return(out)
       }
-    } else if (file.info(filename)$size == 0){
-        out <- print('file exists, but is 0 bytes, download will start again and overwrite previous file')
-        a <- download.file(url=url, destfile=filename)
-    } else {
-        out <- print(sprintf('File %s already exists, it won\'t be downloaded', basename(filename)))
-    }
-    return(out)
+      
+      
   }
- 
   
   
   fun <- function(x, y) {    # Error catching function
