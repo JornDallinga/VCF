@@ -49,32 +49,37 @@ downloadPR <- function(pr, year, dir, log=NULL, baseURL = 'ftp://ftp.glcf.umd.ed
   
   nbFiles <- length(pr) * length(year)
   
-  if (nbFiles == 0){
-      print("No tiles found to cover this coordinate. Skipping")
-      out <- NULL
-      return(out)
-  } else {
-      print(sprintf('About to start downloading: %d files to download in total', nbFiles))
+  
+  print("No tiles found to cover this coordinate. Skipping")
+  out <- NULL
+  return(out)
+  
+  print(sprintf('About to start downloading: %d files to download in total', nbFiles))
+  
+  dl <- function(x, y) { # y is year ; x is the pr element and has already been converted to character
       
-      dl <- function(x, y) { # y is year ; x is the pr element and has already been converted to character
-          
-          # Build URL
-          p <- substr(x,1,3)
-          r <- substr(x,4,6)
-          if(year == 2000| year == 2005){
-              urlP <- sprintf('LandsatTreecover/WRS2/p%s/r%s/p%sr%s_TC_%d/', p, r, p, r, y) #Path part of the url
-              urlF <- sprintf('p%sr%s_TC_%d.tif.gz', p, r, y) # Filename part of the url
-              url <- sprintf('%s%s%s', baseURL, urlP, urlF)
-          } else if (year == 19902000 | year == 20002005) {
-              urlP <- sprintf('LandsatFCC/WRS2/p%s/r%s/p%sr%s_FCC_%d/', p, r, p, r, y) #Path part of the url
-              urlF <- sprintf('p%sr%s_FCC_%d_CM.tif.gz', p, r, y) # Filename part of the url
-              url <- sprintf('%s%s%s', baseURL, urlP, urlF)
-          }
-          
+      # Build URL
+      p <- substr(x,1,3)
+      r <- substr(x,4,6)
+      if(year == 2000| year == 2005){
+          urlP <- sprintf('LandsatTreecover/WRS2/p%s/r%s/p%sr%s_TC_%d/', p, r, p, r, y) #Path part of the url
+          urlF <- sprintf('p%sr%s_TC_%d.tif.gz', p, r, y) # Filename part of the url
+          url <- sprintf('%s%s%s', baseURL, urlP, urlF)
+      } else if (year == 19902000 | year == 20002005) {
+          urlP <- sprintf('LandsatFCC/WRS2/p%s/r%s/p%sr%s_FCC_%d/', p, r, p, r, y) #Path part of the url
+          urlF <- sprintf('p%sr%s_FCC_%d_CM.tif.gz', p, r, y) # Filename part of the url
+          url <- sprintf('%s%s%s', baseURL, urlP, urlF)
+      }
+      
+      # Check if URL exists
+      if (url.exists(url = url) == F){
+          print("No Path/Row was found. It either doesn't exists, or please check your PR input")
+          out <- NULL
+          return(out)
+      } else {
           # Build output string
           filename <- sprintf('%s/%s%s', dir, urlP, urlF)
           dir.create(dirname(filename), showWarnings = FALSE, recursive=TRUE)
-          
           
           
           # Check whether file does already exist or not
@@ -97,9 +102,9 @@ downloadPR <- function(pr, year, dir, log=NULL, baseURL = 'ftp://ftp.glcf.umd.ed
           }
           return(out)
       }
-      
-      
+
   }
+  
   
   
   fun <- function(x, y) {    # Error catching function
