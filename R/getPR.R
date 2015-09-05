@@ -30,6 +30,8 @@
 #' @import sp
 
 
+
+
 getPR <- function(location) {
   #Get the wrs grid
   data(wrs2) # wrs2

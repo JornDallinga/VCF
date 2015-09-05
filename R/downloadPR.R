@@ -33,6 +33,8 @@
 #' 
 #' 
 #' @export downloadPR
+#' 
+#' @import RCurl
 
 downloadPR <- function(pr, year, dir, log=NULL, baseURL = 'ftp://ftp.glcf.umd.edu/glcf/') {
  
