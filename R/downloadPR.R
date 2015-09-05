@@ -49,11 +49,6 @@ downloadPR <- function(pr, year, dir, log=NULL, baseURL = 'ftp://ftp.glcf.umd.ed
   
   nbFiles <- length(pr) * length(year)
   
-  
-  print("No tiles found to cover this coordinate. Skipping")
-  out <- NULL
-  return(out)
-  
   print(sprintf('About to start downloading: %d files to download in total', nbFiles))
   
   dl <- function(x, y) { # y is year ; x is the pr element and has already been converted to character
